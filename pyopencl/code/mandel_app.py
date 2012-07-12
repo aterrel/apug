@@ -4,7 +4,7 @@ import pygame
 from pygame.locals import *
 import sys
 import cevent
-from mandel_cl import calc_fractal_opencl
+from mandel_cl import *
 
 calc_fractal = calc_fractal_opencl
 
@@ -24,11 +24,11 @@ class MandelApp(cevent.CEvent):
     def draw_mandelbrot(self, x1, x2, y1, y2, maxiter=30):
         # draw the Mandelbrot set, from numpy example
         h,w = self.window_size
-        xx = np.arange(x1, x2, (x2-x1)/w)
-        yy = np.arange(y2, y1, (y1-y2)/h) * 1j
-        q = np.ravel(xx+yy[:, np.newaxis]).astype(np.complex64)
-        output = calc_fractal(q, maxiter)
-        max_out = float(output.max()) * 255.
+        #output = calc_fractal(q, maxiter)
+        output = calc_fractal(self.view, self.window_size, maxiter)
+#        max_out = float(output.max()) * 255.
+        if h*w != output.size:
+            import pdb; pdb.set_trace()
         return (output.reshape((h,w)) /
                 float(output.max()) * 255.).astype(np.uint8)
 
@@ -123,4 +123,4 @@ class MandelApp(cevent.CEvent):
 
 if __name__ == "__main__" :
 
-    MandelApp(w = 512*2, h = 512*2).on_execute()
+    MandelApp(w = int(512*1.5), h =int(512*1.5)).on_execute()
